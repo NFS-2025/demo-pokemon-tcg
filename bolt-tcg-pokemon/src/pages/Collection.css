@@ -1,0 +1,101 @@
+.collection-container {
+  display: flex;
+  min-height: 100vh;
+  padding: 20px;
+  gap: 20px;
+}
+
+.sidebar {
+  width: 300px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.deck-list {
+  margin-top: 15px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.empty-deck-message {
+  text-align: center;
+  color: #666;
+  padding: 20px 0;
+}
+
+.deck-card {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  padding: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.deck-card-image {
+  width: 40px;
+  height: 55px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+.deck-card-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.remove-from-deck-button {
+  background: none;
+  border: none;
+  color: #ff3b30;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.remove-from-deck-button:hover {
+  color: #cc2f26;
+}
+
+.search-filter-container {
+  margin-bottom: 20px;
+}
+
+h1 {
+  color: #3b5ba7;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #3b5ba7;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 992px) {
+  .collection-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
+  
+  .deck-list {
+    max-height: 300px;
+  }
+}
