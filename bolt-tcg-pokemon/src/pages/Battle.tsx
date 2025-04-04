@@ -72,24 +72,20 @@ export function Battle() {
     setPhase('battle');
     const result = determineBattleWinner(player1.selectedCard, player2.selectedCard);
     setBattleResult(result);
+  };
 
-    // Attendre que l'animation de combat soit terminée
-    setTimeout(() => {
-      // Mettre à jour le score
-      const winner = result.winner.id === player1.selectedCard.id ? 'player1' : 'player2';
-      setPlayers(prev => ({
-        ...prev,
-        [winner]: { ...prev[winner], score: prev[winner].score + 1 }
-      }));
+  const handleBattleComplete = () => {
+    if (!battleResult) return;
+    
+    // Mettre à jour le score
+    const winner = battleResult.winner.id === players.player1.selectedCard?.id ? 'player1' : 'player2';
+    setPlayers(prev => ({
+      ...prev,
+      [winner]: { ...prev[winner], score: prev[winner].score + 1 }
+    }));
 
-      // Vérifier si un joueur a gagné le match
-      if (players[winner].score + 1 >= 3) {
-        setPhase('game_over');
-      } else {
-        // Au lieu d'aller directement à la sélection, on va à la phase de résumé
-        setPhase('round_summary');
-      }
-    }, 4000); // Durée totale des animations
+    // Passer à l'écran de résumé
+    setPhase('round_summary');
   };
 
   const startNextRound = () => {
@@ -241,35 +237,21 @@ export function Battle() {
               </div>
             </div>
 
-            {players.player1.score < 3 && players.player2.score < 3 && (
+            {players.player1.score >= 3 || players.player2.score >= 3 ? (
+              <button 
+                className="end-game-button"
+                onClick={() => setPhase('game_over')}
+              >
+                Voir les résultats finaux
+              </button>
+            ) : (
               <button 
                 className="next-round-button"
                 onClick={startNextRound}
               >
-                Continuer vers le Round {currentRound + 1}
+                Passer au Round {currentRound + 1}
               </button>
             )}
-          </div>
-        </div>
-      )}
-
-      {phase === 'result' && battleResult && (
-        <div className="battle-result-phase">
-          <h2>Résultat du Round {currentRound}</h2>
-          <div className="battle-cards">
-            <div className={`battle-card ${battleResult.winner.id === players.player1.selectedCard?.id ? 'winner' : 'loser'}`}>
-              <img src={players.player1.selectedCard?.image} alt="Joueur 1" />
-            </div>
-            <div className="battle-info">
-              <div className="battle-description">{battleResult.description}</div>
-              <div className="scores">
-                <span>Joueur 1: {players.player1.score}</span>
-                <span>Joueur 2: {players.player2.score}</span>
-              </div>
-            </div>
-            <div className={`battle-card ${battleResult.winner.id === players.player2.selectedCard?.id ? 'winner' : 'loser'}`}>
-              <img src={players.player2.selectedCard?.image} alt="Joueur 2" />
-            </div>
           </div>
         </div>
       )}
@@ -279,13 +261,7 @@ export function Battle() {
           player1Card={players.player1.selectedCard}
           player2Card={players.player2.selectedCard}
           battleResult={battleResult}
-          onAnimationComplete={() => {
-            if (players.player1.score >= 3 || players.player2.score >= 3) {
-              setPhase('game_over');
-            } else {
-              setPhase('card_selection');
-            }
-          }}
+          onAnimationComplete={handleBattleComplete}
         />
       )}
 

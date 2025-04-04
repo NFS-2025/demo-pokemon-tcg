@@ -317,6 +317,11 @@
   justify-content: center;
   gap: 20px;
   margin: 20px 0;
+  position: relative;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .winner-card {
@@ -341,7 +346,7 @@
   font-size: 16px;
 }
 
-.next-round-button {
+.next-round-button, .end-game-button {
   background: linear-gradient(135deg, #4a90e2, #357abd);
   color: white;
   border: none;
@@ -349,7 +354,7 @@
   border-radius: 8px;
   font-size: 18px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
   width: fit-content;
   margin: 20px auto;
   display: block;
@@ -358,6 +363,17 @@
 .next-round-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #357abd, #2868a5);
+}
+
+.end-game-button {
+  background: linear-gradient(135deg, #f1c40f, #f39c12);
+}
+
+.end-game-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(241, 196, 15, 0.3);
+  background: linear-gradient(135deg, #f39c12, #e67e22);
 }
 
 @keyframes winnerGlow {
