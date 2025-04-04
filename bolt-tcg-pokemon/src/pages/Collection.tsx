@@ -6,6 +6,7 @@ import CardGrid from '../components/collection/CardGrid';
 import DeckBuilder from '../components/deck/DeckBuilder';
 import { useDeck } from '../context/DeckContext';
 import './Collection.css';
+import toast from "react-hot-toast";
 
 export function Collection() {
   const [cards, setCards] = useState<TcgdexCard[]>([]);
@@ -93,14 +94,21 @@ export function Collection() {
   const handleAddToDeck = () => {
     if (!selectedCard) return;
 
-    const result = addCardToDeck(selectedCard);
-    setMessage(result.message);
-    setMessageType(result.success ? 'success' : 'error');
+    addCardToDeck(selectedCard)
+      .then((result) => {
+        
+      // Optionnellement, désélectionner la carte après l'ajout
+      console.log("adding", result)
+      if (result.success) {
+        toast.success(result.message);
+        setTimeout(() => setSelectedCard(null), 1500);
+      } else {
+        toast.error(result.message);
+      }
+      });
+    //setMessage(result.message);
+    //setMessageType(result.success ? 'success' : 'error');
     
-    // Optionnellement, désélectionner la carte après l'ajout
-    if (result.success) {
-      setTimeout(() => setSelectedCard(null), 1500);
-    }
   };
 
   return (

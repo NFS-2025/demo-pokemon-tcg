@@ -8,6 +8,7 @@ import { Collection } from './pages/Collection';
 import { DeckProvider } from "./context/DeckContext";
 import Battle from "./pages/Battle";
 import Profile from './pages/Profile';
+import { Toaster } from "react-hot-toast";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -20,6 +21,7 @@ function App() {
       <DeckProvider>
       <Router>
         <div className="min-h-screen bg-gray-100">
+          <Toaster />
           <Navbar />
           <Routes>
             <Route path="/login" element={<Login />} />

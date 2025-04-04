@@ -10,7 +10,7 @@ interface DeckContextProps {
   deck: TcgdexCard[];
   totalCards: number;
   totalHP: number;
-  addCardToDeck: (card: TcgdexCard) => { success: boolean; message: string };
+  addCardToDeck: (card: TcgdexCard) => Promise<{ success: boolean; message: string }>;
   removeCardFromDeck: (cardId: string) => void;
   saveDeck: (name: string) => void;
   loadDeck: (name: string) => void;

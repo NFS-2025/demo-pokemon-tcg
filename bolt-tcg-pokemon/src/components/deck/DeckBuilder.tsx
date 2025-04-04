@@ -60,13 +60,6 @@ const DeckBuilder: React.FC = () => {
         </div>
       </div>
       <div className="deck-header">
-        <h2>Mon Deck ({totalCards}/{MAX_CARDS_IN_DECK})</h2>
-        <div className="deck-stats">
-          <div className="stat">
-            <span className="stat-label">HP Total:</span>
-            <span className="stat-value">{totalHP}/{MAX_TOTAL_HP}</span>
-          </div>
-        </div>
         <div className="deck-actions">
           <button 
             className="save-button" 

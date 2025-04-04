@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PokemonCard } from '../../services/pokemonTcgApi';
 import { useDeck } from '../../context/DeckContext';
 import './CardDetail.css';
+import toast from "react-hot-toast";
 
 interface CardDetailProps {
   card: PokemonCard | null;
@@ -11,8 +12,6 @@ interface CardDetailProps {
 const CardDetail: React.FC<CardDetailProps> = ({ card, onClose }) => {
   const [imageError, setImageError] = useState(false);
   const { addCardToDeck, isCardInDeck } = useDeck();
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState<'success' | 'error'>('success');
 
   if (!card) return null;
   
@@ -40,8 +39,12 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onClose }) => {
     };
 
     const result = addCardToDeck(tcgdexCard);
-    setMessage(result.message);
-    setMessageType(result.success ? 'success' : 'error');
+    console.log("result", result)
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
   };
 
   const cardInDeck = isCardInDeck(card.id);
@@ -50,13 +53,6 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onClose }) => {
     <div className="card-detail-overlay">
       <div className="card-detail-container">
         <button className="close-button" onClick={onClose}>×</button>
-        
-        {message && (
-          <div className={`message ${messageType}`}>
-            {message}
-            <button onClick={() => setMessage('')} className="close-message">×</button>
-          </div>
-        )}
         
         <div className="card-detail-content">
           <div className="card-detail-image">
