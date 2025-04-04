@@ -9,37 +9,29 @@ import './Collection.css';
 export function Collection() {
   const [cards, setCards] = useState<TcgdexCard[]>([]);
   const [filteredCards, setFilteredCards] = useState<TcgdexCard[]>([]);
-  const [selectedCard, setSelectedCard] = useState<TcgdexCard | null>(null);
+  const [selectedCard, setSelectedCard] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sets, setSets] = useState<TcgdexSet[]>([]);
-  const [deck, setDeck] = useState<TcgdexCard[]>([]);
   const [activeSet, setActiveSet] = useState<string>('base1'); // Default to base set
-
-  // Charger les sets au chargement initial
-  useEffect(() => {
-    const fetchSets = async () => {
-      try {
-        const setsData = await tcgdexApi.getSets();
-        setSets(setsData);
-      } catch (error) {
-        console.error('Error loading sets:', error);
-      }
-    };
-    
-    fetchSets();
-  }, []);
+  const [deck, setDeck] = useState<TcgdexCard[]>([]);
 
   // Charger les cartes du set actif
   useEffect(() => {
     const fetchCards = async () => {
       setLoading(true);
       try {
-        const cardsData = await tcgdexApi.getCardsBySetId(activeSet);
-        setCards(cardsData);
-        setFilteredCards(cardsData);
-        setLoading(false);
+        const set = await tcgdexApi.getSetById(activeSet);
+        if (set.cards) {
+          setCards(set.cards);
+          setFilteredCards(set.cards);
+        } else {
+          setCards([]);
+          setFilteredCards([]);
+        }
       } catch (error) {
         console.error('Error loading cards:', error);
+        setCards([]);
+        setFilteredCards([]);
+      } finally {
         setLoading(false);
       }
     };
@@ -79,37 +71,27 @@ export function Collection() {
     }
   };
 
-  const handleFilter = (filters: FilterOptions) => {
-    let filteredResults = [...cards];
-    
-    if (filters.setId) {
+  const handleFilter = async (filters: FilterOptions) => {
+    if (filters.setId && filters.setId !== activeSet) {
       setActiveSet(filters.setId);
-      return; // Le changement de set va recharger les cartes, pas besoin de continuer
+      return; // Le changement de set va recharger les cartes
     }
     
-    if (filters.types && filters.types.length > 0) {
-      filteredResults = filteredResults.filter(card => 
-        card.types && card.types.some(type => filters.types?.includes(type))
-      );
-    }
-    
-    if (filters.subtypes && filters.subtypes.length > 0) {
-      filteredResults = filteredResults.filter(card => 
-        card.subtypes && card.subtypes.some(subtype => filters.subtypes?.includes(subtype))
-      );
-    }
-    
-    if (filters.rarity) {
-      filteredResults = filteredResults.filter(card => 
-        card.rarity === filters.rarity
-      );
-    }
-    
-    setFilteredCards(filteredResults);
+    // Pour l'instant, on ne peut filtrer que par set
+    // Les autres filtres nécessitent des informations détaillées sur les cartes
+    // que nous n'avons pas dans la réponse de base
   };
 
-  const handleCardClick = (card: TcgdexCard) => {
-    setSelectedCard(card);
+  const handleCardClick = async (card: TcgdexCard) => {
+    try {
+      // Récupérer les détails complets de la carte
+      const cardDetails = await tcgdexApi.getCardById(card.id);
+      setSelectedCard(cardDetails);
+    } catch (error) {
+      console.error('Error loading card details:', error);
+      // Utiliser les informations basiques que nous avons déjà
+      setSelectedCard(card);
+    }
   };
 
   const closeCardDetail = () => {
@@ -117,18 +99,9 @@ export function Collection() {
   };
 
   const addToDeck = (card: TcgdexCard) => {
-    // Vérifier si le deck a déjà 60 cartes (maximum pour un deck Pokémon TCG)
+    // Vérifier si le deck a déjà 60 cartes
     if (deck.length >= 60) {
       alert('Votre deck est complet! (maximum 60 cartes)');
-      return;
-    }
-    
-    // Vérifier les règles du deck Pokémon TCG (max 4 du même nom sauf énergies de base)
-    const sameNameCount = deck.filter(c => c.name === card.name).length;
-    const isBasicEnergy = card.supertype === 'Energy' && card.subtypes?.includes('Basic');
-    
-    if (!isBasicEnergy && sameNameCount >= 4) {
-      alert(`Vous ne pouvez pas avoir plus de 4 cartes "${card.name}" dans votre deck.`);
       return;
     }
     
@@ -140,7 +113,6 @@ export function Collection() {
   };
 
   const removeFromDeck = (cardId: string) => {
-    // Trouver l'index de la première occurrence de cette carte
     const cardIndex = deck.findIndex(card => card.id === cardId);
     
     if (cardIndex !== -1) {
@@ -148,9 +120,27 @@ export function Collection() {
       newDeck.splice(cardIndex, 1);
       setDeck(newDeck);
       
-      // Mettre à jour le localStorage
       localStorage.setItem('savedDeck', JSON.stringify(newDeck));
     }
+  };
+
+  // Convertir les cartes TCGdex au format attendu par CardGrid
+  const convertToPokemonCard = (card: TcgdexCard) => {
+    return {
+      id: card.id,
+      name: card.name,
+      supertype: "Pokémon", // Par défaut
+      subtypes: [],
+      images: {
+        small: card.image,
+        large: card.image
+      },
+      set: {
+        id: activeSet,
+        name: "Set", // Sera remplacé si on a les détails
+        series: ""
+      }
+    };
   };
 
   return (
@@ -192,48 +182,14 @@ export function Collection() {
         </div>
         
         <CardGrid 
-          cards={filteredCards.map(card => ({
-            id: card.id,
-            name: card.name,
-            supertype: card.supertype,
-            subtypes: card.subtypes || [],
-            hp: card.hp?.toString(),
-            types: card.types,
-            images: {
-              small: card.image,
-              large: card.image
-            },
-            rarity: card.rarity,
-            set: {
-              id: card.set.id,
-              name: card.set.name,
-              series: card.set.series
-            }
-          }))}
+          cards={filteredCards.map(convertToPokemonCard)}
           loading={loading} 
           onCardClick={handleCardClick} 
         />
         
         {selectedCard && (
           <CardDetail 
-            card={{
-              id: selectedCard.id,
-              name: selectedCard.name,
-              supertype: selectedCard.supertype,
-              subtypes: selectedCard.subtypes || [],
-              hp: selectedCard.hp?.toString(),
-              types: selectedCard.types,
-              images: {
-                small: selectedCard.image,
-                large: selectedCard.image
-              },
-              rarity: selectedCard.rarity,
-              set: {
-                id: selectedCard.set.id,
-                name: selectedCard.set.name,
-                series: selectedCard.set.series
-              }
-            }}
+            card={selectedCard.supertype ? selectedCard : convertToPokemonCard(selectedCard)}
             onClose={closeCardDetail} 
             onAddToDeck={() => addToDeck(selectedCard)} 
           />

@@ -7,9 +7,9 @@ interface FiltersProps {
 }
 
 export interface FilterOptions {
+  setId?: string;
   types?: string[];
   subtypes?: string[];
-  setId?: string;
   rarity?: string;
 }
 
@@ -59,28 +59,15 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
           <option value="">Tous les sets</option>
           {sets.map((set) => (
             <option key={set.id} value={set.id}>
-              {set.name} ({set.serie})
+              {set.name}
             </option>
           ))}
         </select>
       </div>
-
-      <div className="filter-group">
-        <label>Rareté</label>
-        <select 
-          onChange={(e) => handleFilterChange('rarity', e.target.value)}
-          value={filters.rarity || ''}
-        >
-          <option value="">Toutes les raretés</option>
-          <option value="Common">Commune</option>
-          <option value="Uncommon">Peu commune</option>
-          <option value="Rare">Rare</option>
-          <option value="Rare Holo">Rare Holo</option>
-          <option value="Rare Ultra">Rare Ultra</option>
-          <option value="Rare Secret">Rare Secrète</option>
-        </select>
-      </div>
-
+      
+      {/* Note: Les filtres suivants ne fonctionneront correctement qu'avec des données de carte détaillées */}
+      {/* Nous les gardons pour l'interface utilisateur, mais ils n'auront pas d'effet jusqu'à ce que nous 
+          implémentions un filtre côté client plus avancé */}
       <div className="filter-group">
         <label>Type</label>
         <select 
@@ -99,23 +86,6 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
           <option value="Fairy">Fée</option>
           <option value="Dragon">Dragon</option>
           <option value="Colorless">Incolore</option>
-        </select>
-      </div>
-
-      <div className="filter-group">
-        <label>Sous-type</label>
-        <select 
-          onChange={(e) => handleFilterChange('subtypes', e.target.value ? [e.target.value] : [])}
-          value={filters.subtypes?.[0] || ''}
-        >
-          <option value="">Tous les sous-types</option>
-          <option value="Basic">De base</option>
-          <option value="Stage 1">Niveau 1</option>
-          <option value="Stage 2">Niveau 2</option>
-          <option value="EX">EX</option>
-          <option value="GX">GX</option>
-          <option value="V">V</option>
-          <option value="VMAX">VMAX</option>
         </select>
       </div>
     </div>
