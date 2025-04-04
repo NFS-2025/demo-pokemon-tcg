@@ -5,7 +5,7 @@ import { useDeck } from '../context/DeckContext';
 import './Battle.css';
 import BattleArena from '../components/battle/BattleArena';
 
-type GamePhase = 'deck_selection' | 'deck_reveal' | 'card_selection' | 'battle' | 'result';
+type GamePhase = 'deck_selection' | 'deck_reveal' | 'card_selection' | 'battle' | 'round_summary' | 'game_over';
 type Player = 'player1' | 'player2';
 
 interface PlayerState {
@@ -86,18 +86,20 @@ export function Battle() {
       if (players[winner].score + 1 >= 3) {
         setPhase('game_over');
       } else {
-        // Préparer le prochain round
-        setTimeout(() => {
-          setCurrentRound(prev => prev + 1);
-          setPlayers(prev => ({
-            player1: { ...prev.player1, selectedCard: null },
-            player2: { ...prev.player2, selectedCard: null }
-          }));
-          setBattleResult(null);
-          setPhase('card_selection');
-        }, 3000);
+        // Au lieu d'aller directement à la sélection, on va à la phase de résumé
+        setPhase('round_summary');
       }
     }, 4000); // Durée totale des animations
+  };
+
+  const startNextRound = () => {
+    setCurrentRound(prev => prev + 1);
+    setPlayers(prev => ({
+      player1: { ...prev.player1, selectedCard: null },
+      player2: { ...prev.player2, selectedCard: null }
+    }));
+    setBattleResult(null);
+    setPhase('card_selection');
   };
 
   return (
@@ -157,7 +159,19 @@ export function Battle() {
 
       {phase === 'card_selection' && (
         <div className="card-selection-phase">
-          <h2>Round {currentRound} - Sélection des Cartes</h2>
+          <div className="round-header">
+            <h2>Round {currentRound}</h2>
+            <div className="score-display">
+              <div className={`player-score ${players.player1.score > players.player2.score ? 'leading' : ''}`}>
+                Joueur 1: {players.player1.score}
+              </div>
+              <div className="score-separator">-</div>
+              <div className={`player-score ${players.player2.score > players.player1.score ? 'leading' : ''}`}>
+                Joueur 2: {players.player2.score}
+              </div>
+            </div>
+          </div>
+
           <div className="players-container">
             <div className="player-selection">
               <h3>Joueur 1 {players.player1.selectedCard ? '(Prêt)' : ''}</h3>
@@ -191,6 +205,50 @@ export function Battle() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {phase === 'round_summary' && battleResult && (
+        <div className="round-summary-phase">
+          <h2>Résumé du Round {currentRound}</h2>
+          
+          <div className="summary-content">
+            <div className="battle-outcome">
+              <div className="winner-section">
+                <img 
+                  src={battleResult.winner.image} 
+                  alt={battleResult.winner.name} 
+                  className="winner-card" 
+                />
+                <div className="winner-details">
+                  <h3>{battleResult.winner.name} remporte la manche!</h3>
+                  <p>{battleResult.description}</p>
+                </div>
+              </div>
+
+              <div className="current-score">
+                <h4>Score actuel</h4>
+                <div className="score-display large">
+                  <div className={`player-score ${players.player1.score > players.player2.score ? 'leading' : ''}`}>
+                    Joueur 1: {players.player1.score}
+                  </div>
+                  <div className="score-separator">-</div>
+                  <div className={`player-score ${players.player2.score > players.player1.score ? 'leading' : ''}`}>
+                    Joueur 2: {players.player2.score}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {players.player1.score < 3 && players.player2.score < 3 && (
+              <button 
+                className="next-round-button"
+                onClick={startNextRound}
+              >
+                Continuer vers le Round {currentRound + 1}
+              </button>
+            )}
           </div>
         </div>
       )}

@@ -26,9 +26,10 @@ const BattleArena: React.FC<BattleArenaProps> = ({
       const battleTimer = setTimeout(() => {
         setPhase('result');
         
+        // Augmenter le délai avant la fin pour mieux voir le résultat
         const resultTimer = setTimeout(() => {
           onAnimationComplete();
-        }, 2000);
+        }, 3000); // Augmenté de 2000 à 3000
         
         return () => clearTimeout(resultTimer);
       }, 2000);
