@@ -1,0 +1,143 @@
+.battle-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.players-container {
+  display: flex;
+  gap: 40px;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.player-selection {
+  flex: 1;
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.player-selection h3 {
+  margin-top: 0;
+  color: #3b5ba7;
+}
+
+.deck-cards, .player-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.deck-card, .card-choice {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.card-choice:hover {
+  transform: translateY(-5px);
+}
+
+.battle-result-phase {
+  text-align: center;
+}
+
+.battle-cards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin: 30px 0;
+}
+
+.battle-card {
+  width: 200px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.battle-card img {
+  width: 100%;
+  height: auto;
+}
+
+.battle-card.winner {
+  box-shadow: 0 0 20px #ffcb05;
+  transform: scale(1.1);
+}
+
+.battle-card.loser {
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+
+.battle-info {
+  text-align: center;
+}
+
+.battle-description {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.scores {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.continue-button, .new-game-button {
+  background-color: #3b5ba7;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.2s;
+}
+
+.continue-button:hover, .new-game-button:hover {
+  background-color: #2a4580;
+}
+
+.game-over-phase {
+  text-align: center;
+  padding: 40px;
+}
+
+.final-result {
+  background-color: #f8f9fa;
+  padding: 30px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.final-scores {
+  margin: 20px 0;
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .players-container {
+    flex-direction: column;
+  }
+
+  .battle-cards {
+    flex-direction: column;
+  }
+
+  .battle-card {
+    width: 150px;
+  }
+}

@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { TcgdexCard } from '../services/tcgdexApi';
 
 // Constantes pour les limites du deck
-export const MAX_CARDS_IN_DECK = 60;
-export const MAX_TOTAL_HP = 2000; // Valeur arbitraire, à ajuster selon vos besoins
-export const MAX_SAME_CARD = 4; // Limite du nombre de cartes identiques (règle Pokémon TCG standard)
+export const MAX_CARDS_IN_DECK = 6; // Changé de 60 à 6 pour le format battle
+export const MAX_TOTAL_HP = 1000; // Ajusté pour 6 cartes
+export const MAX_SAME_CARD = 1; // Un seul exemplaire de chaque carte
 
 interface DeckContextProps {
   deck: TcgdexCard[];

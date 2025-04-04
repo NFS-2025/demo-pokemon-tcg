@@ -6,6 +6,7 @@ import { Login } from './pages/Login';
 import { Home } from './pages/Home';
 import { Collection } from './pages/Collection';
 import { DeckProvider } from "./context/DeckContext";
+import Battle from "./pages/Battle";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -34,6 +35,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <Collection />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/battle"
+              element={
+                <PrivateRoute>
+                  <Battle />
                 </PrivateRoute>
               }
             />
