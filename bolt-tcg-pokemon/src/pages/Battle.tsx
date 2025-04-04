@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TcgdexCard } from '../services/tcgdexApi';
+import { tcgdexApi, TcgdexCard } from '../services/tcgdexApi';
 import { determineBattleWinner, BattleResult } from '../utils/battleUtils';
 import { useDeck } from '../context/DeckContext';
 import './Battle.css';
@@ -65,14 +65,46 @@ export function Battle() {
 
   console.log("players", players, phase)
 
-  const processBattleResult = (playersInfo: Record<Player, PlayerState>) => {
+  const processBattleResult = async (playersInfo: Record<Player, PlayerState>) => {
     const { player1, player2 } = playersInfo;
     if (!player1.selectedCard || !player2.selectedCard) return;
 
     setPhase('battle');
-    const result = determineBattleWinner(player1.selectedCard, player2.selectedCard);
-    setBattleResult(result);
+    
+    try {
+      // Récupérer les détails complets des deux cartes
+      const [card1Details, card2Details] = await Promise.all([
+        tcgdexApi.getCardDetailsForBattle(player1.selectedCard.id),
+        tcgdexApi.getCardDetailsForBattle(player2.selectedCard.id)
+      ]);
+
+      console.log('Battle details fetched:', { card1Details, card2Details });
+
+      const result = determineBattleWinner(card1Details, card2Details);
+      setBattleResult(result);
+
+      // Mettre à jour le score après la résolution du combat
+      //const winner = result.winner.id === player1.selectedCard.id ? 'player1' : 'player2';
+      //setPlayers(prev => ({
+      //  ...prev,
+      //  [winner]: { ...prev[winner], score: prev[winner].score + 1 }
+      //}));
+
+      // Vérifier si la partie est terminée
+      //if (players[winner].score + 1 >= 3) {
+      //  setTimeout(() => setPhase('game_over'), 3000);
+      //} else {
+      //  setTimeout(() => setPhase('round_summary'), 3000);
+      //}
+
+    } catch (error) {
+      console.error('Error during battle resolution:', error);
+      // Gérer l'erreur (peut-être revenir à la sélection des cartes)
+      setPhase('card_selection');
+    }
   };
+
+  console.log("phase", phase)
 
   const handleBattleComplete = () => {
     if (!battleResult) return;

@@ -168,5 +168,31 @@ export const tcgdexApi = {
       console.error('Error searching cards:', error);
       throw error;
     }
+  },
+
+  async getCardDetailsForBattle(cardId: string): Promise<TcgdexCard> {
+    try {
+      console.log('Fetching battle details for card:', cardId);
+      const response = await apiClient.get(`/en/cards/${cardId}`);
+      const cardData = response.data;
+
+      // Assurons-nous d'avoir toutes les informations nécessaires pour le combat
+      const battleCard = {
+        id: cardData.id,
+        name: cardData.name,
+        image: buildAssetUrl(cardData.image),
+        hp: parseInt(cardData.hp || '0', 10),
+        types: cardData.types || [],
+        // Ajouter d'autres informations pertinentes pour le combat
+        weaknesses: cardData.weaknesses || [],
+        resistances: cardData.resistances || [],
+      };
+
+      console.log('Battle card details:', battleCard);
+      return battleCard;
+    } catch (error) {
+      console.error('Error fetching card battle details:', error);
+      throw error;
+    }
   }
 };
