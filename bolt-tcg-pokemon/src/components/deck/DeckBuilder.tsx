@@ -42,6 +42,23 @@ const DeckBuilder: React.FC = () => {
 
   return (
     <div className="deck-builder">
+      <div className="deck-stats">
+        <h2>Deck ({totalCards}/{MAX_CARDS_IN_DECK})</h2>
+        <div className="hp-meter">
+          <div className="hp-bar">
+            <div 
+              className="hp-progress" 
+              style={{ 
+                width: `${(totalHP / MAX_TOTAL_HP) * 100}%`,
+                backgroundColor: totalHP > MAX_TOTAL_HP ? '#dc3545' : '#28a745'
+              }}
+            />
+          </div>
+          <span className="hp-text">
+            HP Total: {totalHP}/{MAX_TOTAL_HP}
+          </span>
+        </div>
+      </div>
       <div className="deck-header">
         <h2>Mon Deck ({totalCards}/{MAX_CARDS_IN_DECK})</h2>
         <div className="deck-stats">

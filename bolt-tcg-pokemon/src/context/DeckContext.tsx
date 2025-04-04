@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { TcgdexCard } from '../services/tcgdexApi';
+import { tcgdexApi, TcgdexCard } from '../services/tcgdexApi';
 
 // Constantes pour les limites du deck
-export const MAX_CARDS_IN_DECK = 6; // Changé de 60 à 6 pour le format battle
-export const MAX_TOTAL_HP = 1000; // Ajusté pour 6 cartes
+export const MAX_CARDS_IN_DECK = 6;
+export const MAX_TOTAL_HP = 400; // Nouvelle limite de HP
 export const MAX_SAME_CARD = 1; // Un seul exemplaire de chaque carte
 
 interface DeckContextProps {
@@ -58,30 +58,44 @@ export const DeckProvider: React.FC<DeckProviderProps> = ({ children }) => {
   };
 
   // Ajouter une carte au deck avec validation
-  const addCardToDeck = (card: TcgdexCard): { success: boolean; message: string } => {
-    // Vérifier si le deck a atteint la limite de cartes
-    if (deck.length >= MAX_CARDS_IN_DECK) {
-      return { success: false, message: `Votre deck a atteint la limite de ${MAX_CARDS_IN_DECK} cartes.` };
-    }
+  const addCardToDeck = async (card: TcgdexCard): Promise<{ success: boolean; message: string }> => {
+    try {
+      // Récupérer les détails de la carte pour avoir les HP précis
+      const cardDetails = await tcgdexApi.getCardDetailsForBattle(card.id);
+      const currentTotalHP = deck.reduce((sum, c) => sum + (c.hp || 0), 0);
+      const newTotalHP = currentTotalHP + (cardDetails.hp || 0);
 
-    // Vérifier le nombre de cartes identiques (par nom)
-    const sameNameCount = deck.filter(c => c.name === card.name).length;
-    if (sameNameCount >= MAX_SAME_CARD) {
-      return { success: false, message: `Vous ne pouvez pas avoir plus de ${MAX_SAME_CARD} cartes "${card.name}" dans votre deck.` };
-    }
+      // Vérifications
+      if (deck.length >= MAX_CARDS_IN_DECK) {
+        return { success: false, message: `Votre deck a atteint la limite de ${MAX_CARDS_IN_DECK} cartes.` };
+      }
 
-    // Vérifier si l'ajout dépasserait la limite de HP total
-    const cardHP = parseInt(card.hp?.toString() || '0', 10) || 0;
-    if (totalHP + cardHP > MAX_TOTAL_HP) {
-      return { success: false, message: `L'ajout de cette carte dépasserait la limite de ${MAX_TOTAL_HP} HP pour votre deck.` };
-    }
+      if (newTotalHP > MAX_TOTAL_HP) {
+        return { 
+          success: false, 
+          message: `L'ajout de cette carte dépasserait la limite de ${MAX_TOTAL_HP} HP (Total actuel: ${currentTotalHP}, Carte: ${cardDetails.hp} HP)`
+        };
+      }
 
-    // Ajouter la carte au deck
-    const newDeck = [...deck, card];
-    setDeck(newDeck);
-    updateDeckStats(newDeck);
-    localStorage.setItem('currentDeck', JSON.stringify(newDeck));
-    return { success: true, message: `${card.name} a été ajouté à votre deck.` };
+      const sameNameCount = deck.filter(c => c.name === card.name).length;
+      if (sameNameCount >= MAX_SAME_CARD) {
+        return { success: false, message: `Vous ne pouvez pas avoir plus de ${MAX_SAME_CARD} exemplaire de "${card.name}".` };
+      }
+
+      // Ajouter la carte avec les HP précis
+      const newDeck = [...deck, cardDetails];
+      setDeck(newDeck);
+      updateDeckStats(newDeck);
+      localStorage.setItem('currentDeck', JSON.stringify(newDeck));
+      
+      return { 
+        success: true, 
+        message: `${card.name} (${cardDetails.hp} HP) a été ajouté à votre deck.` 
+      };
+    } catch (error) {
+      console.error('Error adding card to deck:', error);
+      return { success: false, message: "Erreur lors de l'ajout de la carte." };
+    }
   };
 
   // Retirer une carte du deck

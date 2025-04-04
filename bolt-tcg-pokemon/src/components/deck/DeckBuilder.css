@@ -221,6 +221,33 @@
   opacity: 1;
 }
 
+.hp-meter {
+  margin: 10px 0;
+  padding: 5px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.hp-bar {
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.hp-progress {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.hp-text {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  text-align: right;
+}
+
 @media (max-width: 768px) {
   .card-list {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
