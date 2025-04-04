@@ -1,0 +1,228 @@
+.deck-builder {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.deck-header {
+  margin-bottom: 15px;
+}
+
+.deck-header h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #3b5ba7;
+}
+
+.deck-stats {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.stat {
+  background-color: #e9ecef;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.stat-label {
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.stat-value {
+  color: #3b5ba7;
+}
+
+.deck-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.save-button, .clear-button, .confirm-save-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.save-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.clear-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.save-button:hover, .clear-button:hover, .confirm-save-button:hover {
+  opacity: 0.9;
+}
+
+.save-button:disabled, .clear-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.save-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.deck-name-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.confirm-save-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  position: relative;
+  font-size: 14px;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.close-message {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.empty-deck {
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+  background-color: #e9ecef;
+  border-radius: 4px;
+}
+
+.deck-content {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.deck-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  padding-bottom: 5px;
+  margin-top: 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+  color: #495057;
+  font-size: 16px;
+}
+
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.deck-card {
+  position: relative;
+  background-color: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s;
+}
+
+.deck-card:hover {
+  transform: translateY(-3px);
+}
+
+.deck-card-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2/3;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.deck-card-info {
+  padding: 8px;
+  position: relative;
+}
+
+.card-name {
+  margin: 0;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 20px;
+}
+
+.card-hp {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.remove-card {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #dc3545;
+  color: white;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.remove-card:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .card-list {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}

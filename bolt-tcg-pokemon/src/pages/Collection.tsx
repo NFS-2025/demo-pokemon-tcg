@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { tcgdexApi, TcgdexCard, TcgdexSet } from '../services/tcgdexApi';
+import { tcgdexApi, TcgdexCard } from '../services/tcgdexApi';
 import SearchBar from '../components/collection/SearchBar';
-import Filters, { FilterOptions } from '../components/collection/Filters';
+import Filters from '../components/collection/Filters';
 import CardGrid from '../components/collection/CardGrid';
-import CardDetail from '../components/collection/CardDetail';
+import DeckBuilder from '../components/deck/DeckBuilder';
+import { useDeck } from '../context/DeckContext';
 import './Collection.css';
 
 export function Collection() {
   const [cards, setCards] = useState<TcgdexCard[]>([]);
   const [filteredCards, setFilteredCards] = useState<TcgdexCard[]>([]);
-  const [selectedCard, setSelectedCard] = useState<any | null>(null);
+
+  const [selectedCard, setSelectedCard] = useState<TcgdexCard | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeSet, setActiveSet] = useState<string>('base1'); // Default to base set
-  const [deck, setDeck] = useState<TcgdexCard[]>([]);
+  const [activeSet, setActiveSet] = useState<string>('base1');
+  const { addCardToDeck, isCardInDeck } = useDeck();
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState<'success' | 'error'>('success');
 
   // Charger les cartes du set actif
   useEffect(() => {
@@ -83,117 +87,85 @@ export function Collection() {
   };
 
   const handleCardClick = async (card: TcgdexCard) => {
-    try {
-      // Récupérer les détails complets de la carte
-      const cardDetails = await tcgdexApi.getCardById(card.id);
-      setSelectedCard(cardDetails);
-    } catch (error) {
-      console.error('Error loading card details:', error);
-      // Utiliser les informations basiques que nous avons déjà
-      setSelectedCard(card);
-    }
+    setSelectedCard(card);
   };
 
-  const closeCardDetail = () => {
-    setSelectedCard(null);
-  };
+  const handleAddToDeck = () => {
+    if (!selectedCard) return;
 
-  const addToDeck = (card: TcgdexCard) => {
-    // Vérifier si le deck a déjà 60 cartes
-    if (deck.length >= 60) {
-      alert('Votre deck est complet! (maximum 60 cartes)');
-      return;
-    }
+    const result = addCardToDeck(selectedCard);
+    setMessage(result.message);
+    setMessageType(result.success ? 'success' : 'error');
     
-    const newDeck = [...deck, card];
-    setDeck(newDeck);
-    
-    // Sauvegarder dans le localStorage
-    localStorage.setItem('savedDeck', JSON.stringify(newDeck));
-  };
-
-  const removeFromDeck = (cardId: string) => {
-    const cardIndex = deck.findIndex(card => card.id === cardId);
-    
-    if (cardIndex !== -1) {
-      const newDeck = [...deck];
-      newDeck.splice(cardIndex, 1);
-      setDeck(newDeck);
-      
-      localStorage.setItem('savedDeck', JSON.stringify(newDeck));
+    // Optionnellement, désélectionner la carte après l'ajout
+    if (result.success) {
+      setTimeout(() => setSelectedCard(null), 1500);
     }
-  };
-
-  // Convertir les cartes TCGdex au format attendu par CardGrid
-  const convertToPokemonCard = (card: TcgdexCard) => {
-    return {
-      id: card.id,
-      name: card.name,
-      supertype: "Pokémon", // Par défaut
-      subtypes: [],
-      images: {
-        small: card.image,
-        large: card.image
-      },
-      set: {
-        id: activeSet,
-        name: "Set", // Sera remplacé si on a les détails
-        series: ""
-      }
-    };
   };
 
   return (
-    <div className="collection-container">
-      <div className="sidebar">
-        <h2>Mon Deck ({deck.length}/60)</h2>
-        <div className="deck-list">
-          {deck.length === 0 ? (
-            <p className="empty-deck-message">Ajoutez des cartes à votre deck</p>
-          ) : (
-            <div>
-              {deck.map((card, index) => (
-                <div key={`${card.id}-${index}`} className="deck-card">
-                  <img src={card.image} alt={card.name} className="deck-card-image" />
-                  <div className="deck-card-info">
-                    <p>{card.name}</p>
-                    <button 
-                      className="remove-from-deck-button"
-                      onClick={() => removeFromDeck(card.id)}
-                    >
-                      &times;
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
+    <div className="collection-page">
       <div className="main-content">
         <h1>Collection de Cartes Pokémon</h1>
         
         <div className="search-filter-container">
           <SearchBar onSearch={handleSearch} />
-          <Filters 
-            onFilterChange={handleFilter}
-          />
+          <Filters onFilterChange={handleFilter} />
         </div>
         
         <CardGrid 
-          cards={filteredCards.map(convertToPokemonCard)}
+          cards={filteredCards}
           loading={loading} 
-          onCardClick={handleCardClick} 
+          onCardClick={handleCardClick}
+          selectedCardId={selectedCard?.id}
         />
-        
-        {selectedCard && (
-          <CardDetail 
-            card={selectedCard.supertype ? selectedCard : convertToPokemonCard(selectedCard)}
-            onClose={closeCardDetail} 
-            onAddToDeck={() => addToDeck(selectedCard)} 
-          />
+      </div>
+
+      <div className="sidebar">
+        {selectedCard ? (
+          <div className="selected-card-panel">
+            <h3>Carte Sélectionnée</h3>
+            <div className="selected-card-content">
+              <img 
+                src={selectedCard.image} 
+                alt={selectedCard.name} 
+                className="selected-card-image"
+              />
+              <div className="selected-card-info">
+                <h4>{selectedCard.name}</h4>
+                {selectedCard.hp && <p>HP: {selectedCard.hp}</p>}
+                {selectedCard.types && (
+                  <p>Types: {selectedCard.types.join(', ')}</p>
+                )}
+                <button 
+                  className={`add-to-deck-button ${isCardInDeck(selectedCard.id) ? 'in-deck' : ''}`}
+                  onClick={handleAddToDeck}
+                  disabled={isCardInDeck(selectedCard.id)}
+                >
+                  {isCardInDeck(selectedCard.id) ? 'Déjà dans le deck' : 'Ajouter au deck'}
+                </button>
+                <button 
+                  className="close-selection-button"
+                  onClick={() => setSelectedCard(null)}
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
+            {message && (
+              <div className={`message ${messageType}`}>
+                {message}
+                <button onClick={() => setMessage('')} className="close-message">×</button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="empty-selection">
+            <p>Sélectionnez une carte pour voir les détails</p>
+          </div>
         )}
+        
+        <DeckBuilder />
       </div>
     </div>
   );

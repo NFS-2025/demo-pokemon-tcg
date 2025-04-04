@@ -8,8 +8,6 @@ interface FiltersProps {
 
 export interface FilterOptions {
   setId?: string;
-  types?: string[];
-  subtypes?: string[];
   rarity?: string;
 }
 
@@ -22,7 +20,12 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
     const fetchSets = async () => {
       try {
         const data = await tcgdexApi.getSets();
-        setSets(data);
+        // Tri des sets par date de sortie (le plus récent en premier)
+        const sortedSets = data.sort((a, b) => {
+          if (!a.releaseDate || !b.releaseDate) return 0;
+          return new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime();
+        });
+        setSets(sortedSets);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching sets:', error);
@@ -42,52 +45,73 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
     onFilterChange(newFilters);
   };
 
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, Event>, type: 'logo' | 'symbol') => {
+    const target = event.target as HTMLImageElement;
+    const setId = target.getAttribute('data-setid');
+    
+    // Essayer avec l'extension JPG si WebP échoue
+    if (target.src.endsWith('.webp') && setId) {
+      target.src = `https://assets.tcgdex.net/en/sets/${setId}/${type}.jpg`;
+      target.onerror = () => {
+        // Si JPG échoue aussi, utiliser un fallback
+        target.onerror = null;
+        target.style.display = 'none';
+        target.parentElement?.querySelector('.fallback-text')?.classList.remove('hidden');
+      };
+    } else {
+      // Si ce n'est pas WebP ou après avoir essayé JPG
+      target.style.display = 'none';
+      target.parentElement?.querySelector('.fallback-text')?.classList.remove('hidden');
+    }
+  };
+
   if (loading) {
-    return <div>Chargement des filtres...</div>;
+    return <div className="filters-loading">Chargement des filtres...</div>;
   }
 
   return (
     <div className="filters-container">
       <h3>Filtres</h3>
       
-      <div className="filter-group">
+      <div className="filter-group set-filter">
         <label>Set</label>
-        <select 
-          onChange={(e) => handleFilterChange('setId', e.target.value)}
-          value={filters.setId || ''}
-        >
-          <option value="">Tous les sets</option>
-          {sets.map((set) => (
-            <option key={set.id} value={set.id}>
-              {set.name}
-            </option>
-          ))}
-        </select>
+        <div className="custom-select">
+          <select 
+            onChange={(e) => handleFilterChange('setId', e.target.value)}
+            value={filters.setId || ''}
+          >
+            <option value="">Tous les sets</option>
+            {sets.map((set) => (
+              <option key={set.id} value={set.id}>
+                <img 
+                  src={`https://assets.tcgdex.net/univ/sets/${filters.setId}/symbol.webp`}
+                  alt={`Symbole ${sets.find(set => set.id === filters.setId)?.name}`}
+                  className="set-symbol-image"
+                  data-setid={filters.setId}
+                  onError={(e) => handleImageError(e, 'symbol')}
+                />
+                <span>{set.name}</span>
+              </option>
+            ))}
+          </select>
+          <div className="select-with-icon">
+            {/* Affichage du symbole du set sélectionné dans la dropdown */}
+            {filters.setId && (
+              <div className="set-symbol-container">
+                <img 
+                  src={`https://assets.tcgdex.net/univ/sets/${filters.setId}/symbol.webp`}
+                  alt={`Symbole ${sets.find(set => set.id === filters.setId)?.name}`}
+                  className="set-symbol-image"
+                  data-setid={filters.setId}
+                  onError={(e) => handleImageError(e, 'symbol')}
+                />
+                <span className="fallback-text hidden">{sets.find(set => set.id === filters.setId)?.name.substring(0, 2)}</span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       
-      {/* Note: Les filtres suivants ne fonctionneront correctement qu'avec des données de carte détaillées */}
-      {/* Nous les gardons pour l'interface utilisateur, mais ils n'auront pas d'effet jusqu'à ce que nous 
-          implémentions un filtre côté client plus avancé */}
-      <div className="filter-group">
-        <label>Type</label>
-        <select 
-          onChange={(e) => handleFilterChange('types', e.target.value ? [e.target.value] : [])}
-          value={filters.types?.[0] || ''}
-        >
-          <option value="">Tous les types</option>
-          <option value="Grass">Plante</option>
-          <option value="Fire">Feu</option>
-          <option value="Water">Eau</option>
-          <option value="Lightning">Électrique</option>
-          <option value="Psychic">Psy</option>
-          <option value="Fighting">Combat</option>
-          <option value="Darkness">Obscurité</option>
-          <option value="Metal">Métal</option>
-          <option value="Fairy">Fée</option>
-          <option value="Dragon">Dragon</option>
-          <option value="Colorless">Incolore</option>
-        </select>
-      </div>
     </div>
   );
 };

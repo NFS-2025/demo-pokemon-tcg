@@ -14,10 +14,35 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
+.card-item.selected {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(59, 91, 167, 0.4);
+  border: 2px solid #3b5ba7;
+}
+
+.card-item.selected:hover {
+  transform: translateY(-5px);
+}
+
 .card-image {
   width: 100%;
   height: auto;
+  aspect-ratio: 2/3;
   object-fit: contain;
+  background-color: #f8f8f8;
+}
+
+.card-image-placeholder {
+  width: 100%;
+  aspect-ratio: 2/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #666;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
 }
 
 .card-info {

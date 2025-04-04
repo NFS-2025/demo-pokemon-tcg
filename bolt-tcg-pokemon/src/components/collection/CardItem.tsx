@@ -1,27 +1,40 @@
-import React from 'react';
-import { PokemonCard } from '../../services/pokemonTcgApi';
+import React, { useState } from 'react';
+import { TcgdexCard } from '../../services/tcgdexApi';
 import './CardItem.css';
 
 interface CardItemProps {
-  card: PokemonCard;
+  card: TcgdexCard;
   onClick: () => void;
+  isSelected?: boolean;
 }
 
-const CardItem: React.FC<CardItemProps> = ({ card, onClick }) => {
+const CardItem: React.FC<CardItemProps> = ({ card, onClick, isSelected }) => {
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
-    <div className="card-item" onClick={onClick}>
-      <img 
-        src={card.images.small} 
-        alt={card.name} 
-        className="card-image"
-        loading="lazy"
-      />
+    <div 
+      className={`card-item ${isSelected ? 'selected' : ''}`} 
+      onClick={onClick}
+    >
+      {!imageError ? (
+        <img 
+          src={card.image} 
+          alt={card.name} 
+          className="card-image"
+          loading="lazy"
+          onError={handleImageError}
+        />
+      ) : (
+        <div className="card-image-placeholder">
+          <span>{card.name}</span>
+        </div>
+      )}
       <div className="card-info">
         <h3 className="card-name">{card.name}</h3>
-        <div className="card-details">
-          {card.rarity && <span className="card-rarity">{card.rarity}</span>}
-          <span className="card-set">{card.set.name}</span>
-        </div>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { Navbar } from './components/Navbar';
 import { Login } from './pages/Login';
 import { Home } from './pages/Home';
 import { Collection } from './pages/Collection';
+import { DeckProvider } from "./context/DeckContext";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <AuthProvider>
+      <DeckProvider>
       <Router>
         <div className="min-h-screen bg-gray-100">
           <Navbar />
@@ -38,6 +40,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      </DeckProvider>
     </AuthProvider>
   );
 }
