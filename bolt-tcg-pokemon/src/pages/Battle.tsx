@@ -3,6 +3,7 @@ import { TcgdexCard } from '../services/tcgdexApi';
 import { determineBattleWinner, BattleResult } from '../utils/battleUtils';
 import { useDeck } from '../context/DeckContext';
 import './Battle.css';
+import BattleArena from '../components/battle/BattleArena';
 
 type GamePhase = 'deck_selection' | 'deck_reveal' | 'card_selection' | 'battle' | 'result';
 type Player = 'player1' | 'player2';
@@ -47,48 +48,56 @@ export function Battle() {
   };
 
   const handleCardSelection = (player: Player, card: TcgdexCard) => {
-    setPlayers(prev => ({
-      ...prev,
-      [player]: { ...prev[player], selectedCard: card }
-    }));
+    setPlayers(prev => {
+      const newPlayers = {
+        ...prev,
+        [player]: { ...prev[player], selectedCard: card }
+      }
 
-    // Si les deux joueurs ont sélectionné leur carte
-    if (players[player === 'player1' ? 'player2' : 'player1'].selectedCard) {
-      processBattleResult();
-    }
+      // Si les deux joueurs ont sélectionné leur carte
+      if (newPlayers[player === 'player1' ? 'player2' : 'player1'].selectedCard) {
+        console.log("process", newPlayers)
+        processBattleResult(newPlayers);
+      }
+      return newPlayers
+    } );
   };
 
-  const processBattleResult = () => {
-    const { player1, player2 } = players;
+  console.log("players", players, phase)
+
+  const processBattleResult = (playersInfo: Record<Player, PlayerState>) => {
+    const { player1, player2 } = playersInfo;
     if (!player1.selectedCard || !player2.selectedCard) return;
 
+    setPhase('battle');
     const result = determineBattleWinner(player1.selectedCard, player2.selectedCard);
     setBattleResult(result);
-    setPhase('result');
 
-    // Mettre à jour le score
-    const winner = result.winner.id === player1.selectedCard.id ? 'player1' : 'player2';
-    setPlayers(prev => ({
-      ...prev,
-      [winner]: { ...prev[winner], score: prev[winner].score + 1 }
-    }));
+    // Attendre que l'animation de combat soit terminée
+    setTimeout(() => {
+      // Mettre à jour le score
+      const winner = result.winner.id === player1.selectedCard.id ? 'player1' : 'player2';
+      setPlayers(prev => ({
+        ...prev,
+        [winner]: { ...prev[winner], score: prev[winner].score + 1 }
+      }));
 
-    // Vérifier si un joueur a gagné le match
-    if (players[winner].score + 1 >= 3) {
-      // Fin du match
-      setPhase('game_over');
-    } else {
-      // Préparer le prochain round
-      setTimeout(() => {
-        setCurrentRound(prev => prev + 1);
-        setPlayers(prev => ({
-          player1: { ...prev.player1, selectedCard: null },
-          player2: { ...prev.player2, selectedCard: null }
-        }));
-        setBattleResult(null);
-        setPhase('card_selection');
-      }, 3000);
-    }
+      // Vérifier si un joueur a gagné le match
+      if (players[winner].score + 1 >= 3) {
+        setPhase('game_over');
+      } else {
+        // Préparer le prochain round
+        setTimeout(() => {
+          setCurrentRound(prev => prev + 1);
+          setPlayers(prev => ({
+            player1: { ...prev.player1, selectedCard: null },
+            player2: { ...prev.player2, selectedCard: null }
+          }));
+          setBattleResult(null);
+          setPhase('card_selection');
+        }, 3000);
+      }
+    }, 4000); // Durée totale des animations
   };
 
   return (
@@ -205,6 +214,21 @@ export function Battle() {
             </div>
           </div>
         </div>
+      )}
+
+      {phase === 'battle' && battleResult && players.player1.selectedCard && players.player2.selectedCard && (
+        <BattleArena
+          player1Card={players.player1.selectedCard}
+          player2Card={players.player2.selectedCard}
+          battleResult={battleResult}
+          onAnimationComplete={() => {
+            if (players.player1.score >= 3 || players.player2.score >= 3) {
+              setPhase('game_over');
+            } else {
+              setPhase('card_selection');
+            }
+          }}
+        />
       )}
 
       {phase === 'game_over' && (

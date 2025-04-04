@@ -1,0 +1,155 @@
+.battle-arena {
+  position: relative;
+  background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+  min-height: 400px;
+  border-radius: 16px;
+  padding: 40px;
+  overflow: hidden;
+}
+
+.versus-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 72px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.battle-scene {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.battle-card {
+  width: 220px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: all 0.5s ease-out;
+}
+
+.battle-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.battle-card.entrance.player1 {
+  animation: slideFromLeft 0.5s ease-out;
+}
+
+.battle-card.entrance.player2 {
+  animation: slideFromRight 0.5s ease-out;
+}
+
+.battle-card.battle {
+  animation: battleShake 0.5s ease-in-out infinite;
+}
+
+.battle-card.winner {
+  animation: winnerPulse 1s ease-in-out infinite;
+  z-index: 2;
+}
+
+.battle-card.loser {
+  animation: loserFade 0.5s ease-out forwards;
+}
+
+.battle-effects {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.clash-effect {
+  font-size: 48px;
+  animation: clashPulse 0.5s ease-in-out infinite;
+}
+
+.type-effect {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ff4444;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  animation: effectFloat 1s ease-in-out infinite;
+}
+
+.battle-result {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  animation: slideUp 0.5s ease-out;
+}
+
+.result-message {
+  display: inline-block;
+  padding: 15px 30px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.result-message.type { color: #e74c3c; }
+.result-message.hp { color: #27ae60; }
+.result-message.default { color: #3498db; }
+
+/* Animations */
+@keyframes slideFromLeft {
+  from { transform: translateX(-200%) rotate(-20deg); opacity: 0; }
+  to { transform: translateX(0) rotate(0); opacity: 1; }
+}
+
+@keyframes slideFromRight {
+  from { transform: translateX(200%) rotate(20deg); opacity: 0; }
+  to { transform: translateX(0) rotate(0); opacity: 1; }
+}
+
+@keyframes battleShake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  25% { transform: translateX(-5px) rotate(-3deg); }
+  75% { transform: translateX(5px) rotate(3deg); }
+}
+
+@keyframes winnerPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 30px #ffd700; }
+  50% { transform: scale(1.05); box-shadow: 0 0 50px #ffd700; }
+}
+
+@keyframes loserFade {
+  to { 
+    transform: scale(0.95) rotate(5deg); 
+    opacity: 0.6; 
+    filter: grayscale(0.8);
+  }
+}
+
+@keyframes clashPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+@keyframes effectFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
