@@ -5,7 +5,7 @@ import { useDeck } from '../context/DeckContext';
 import './Battle.css';
 import BattleArena from '../components/battle/BattleArena';
 
-type GamePhase = 'deck_selection' | 'deck_reveal' | 'card_selection' | 'battle' | 'round_summary' | 'game_over';
+type GamePhase = 'deck_selection' | 'card_selection' | 'battle' | 'round_summary' | 'game_over';
 type Player = 'player1' | 'player2';
 
 interface PlayerState {
@@ -41,9 +41,9 @@ export function Battle() {
       [player]: { ...prev[player], deck: selectedDeck }
     }));
 
-    // Si les deux joueurs ont sélectionné leur deck
+    // Si les deux joueurs ont sélectionné leur deck, passer directement à la sélection des cartes
     if (players[player === 'player1' ? 'player2' : 'player1'].deck.length > 0) {
-      setPhase('deck_reveal');
+      setPhase('card_selection');
     }
   };
 
@@ -123,33 +123,6 @@ export function Battle() {
               </select>
             </div>
           </div>
-        </div>
-      )}
-
-      {phase === 'deck_reveal' && (
-        <div className="deck-reveal-phase">
-          <h2>Révélation des Decks</h2>
-          <div className="decks-container">
-            <div className="player-deck">
-              <h3>Deck Joueur 1</h3>
-              <div className="deck-cards">
-                {players.player1.deck.map(card => (
-                  <img key={card.id} src={card.image} alt={card.name} className="deck-card" />
-                ))}
-              </div>
-            </div>
-            <div className="player-deck">
-              <h3>Deck Joueur 2</h3>
-              <div className="deck-cards">
-                {players.player2.deck.map(card => (
-                  <img key={card.id} src={card.image} alt={card.name} className="deck-card" />
-                ))}
-              </div>
-            </div>
-          </div>
-          <button onClick={() => setPhase('card_selection')} className="continue-button">
-            Commencer le Combat
-          </button>
         </div>
       )}
 

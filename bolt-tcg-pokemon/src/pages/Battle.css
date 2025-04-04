@@ -380,3 +380,9 @@
   0%, 100% { box-shadow: 0 0 20px #ffd700; }
   50% { box-shadow: 0 0 30px #ffd700; }
 }
+
+/* Supprimer les styles spécifiques à deck_reveal qui ne sont plus nécessaires */
+.decks-container,
+.deck-reveal-phase {
+  display: none; /* ou supprimer complètement ces règles */
+}
