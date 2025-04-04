@@ -82,11 +82,39 @@ export const determineBattleWinner = (card1: TcgdexCard, card2: TcgdexCard): Bat
   const type1 = card1.types?.[0];
   const type2 = card2.types?.[0];
 
-  // Vérifier les faiblesses et résistances spécifiques
   if (type1 && type2) {
-    // Vérifier si card2 est faible contre le type de card1
+    // Vérifier les avantages mutuels
     const card2WeakTo = card2.weaknesses?.find(w => w.type === type1);
-    if (card2WeakTo) {
+    const card1WeakTo = card1.weaknesses?.find(w => w.type === type2);
+
+    // Si les deux cartes ont un avantage l'une sur l'autre
+    if (card2WeakTo && card1WeakTo) {
+      return {
+        winner: null,
+        loser: null,
+        reason: 'draw',
+        description: `Match nul ! ${card1.name} et ${card2.name} sont tous les deux efficaces l'un contre l'autre.`,
+        isDraw: true
+      };
+    }
+
+    // Vérifier les résistances mutuelles
+    const card2ResistsTo = card2.resistances?.find(r => r.type === type1);
+    const card1ResistsTo = card1.resistances?.find(r => r.type === type2);
+
+    // Si les deux cartes résistent l'une à l'autre
+    if (card2ResistsTo && card1ResistsTo) {
+      return {
+        winner: null,
+        loser: null,
+        reason: 'draw',
+        description: `Match nul ! Les deux Pokémon se résistent mutuellement.`,
+        isDraw: true
+      };
+    }
+
+    // Cas d'un seul avantage
+    if (card2WeakTo && !card1WeakTo) {
       return {
         winner: card1,
         loser: card2,
@@ -96,9 +124,7 @@ export const determineBattleWinner = (card1: TcgdexCard, card2: TcgdexCard): Bat
       };
     }
 
-    // Vérifier si card1 est faible contre le type de card2
-    const card1WeakTo = card1.weaknesses?.find(w => w.type === type2);
-    if (card1WeakTo) {
+    if (card1WeakTo && !card2WeakTo) {
       return {
         winner: card2,
         loser: card1,
@@ -108,10 +134,7 @@ export const determineBattleWinner = (card1: TcgdexCard, card2: TcgdexCard): Bat
       };
     }
 
-    // Vérifier les résistances
-    const card2ResistsTo = card2.resistances?.find(r => r.type === type1);
-    const card1ResistsTo = card1.resistances?.find(r => r.type === type2);
-    
+    // Cas d'une seule résistance
     if (card2ResistsTo && !card1ResistsTo) {
       return {
         winner: card2,
