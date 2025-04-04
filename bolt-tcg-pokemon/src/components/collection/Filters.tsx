@@ -27,6 +27,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
         });
         setSets(sortedSets);
         setLoading(false);
+        handleFilterChange('setId', sortedSets[0]?.id); // Appliquer le premier set par défaut
       } catch (error) {
         console.error('Error fetching sets:', error);
         setLoading(false);
@@ -80,7 +81,6 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
             onChange={(e) => handleFilterChange('setId', e.target.value)}
             value={filters.setId || ''}
           >
-            <option value="">Tous les sets</option>
             {sets.map((set) => (
               <option key={set.id} value={set.id}>
                 <img 
