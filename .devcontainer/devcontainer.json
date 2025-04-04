@@ -1,0 +1,35 @@
+{
+  "name": "React Development Environment (Vite)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "dsznajder.es7-react-js-snippets",
+        "ms-vscode.vscode-typescript-next",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.npm-intellisense",
+        "antfu.vite",                     // Vite support
+        "yoavbls.pretty-ts-errors",       // Better TypeScript errors
+        "bradlc.vscode-tailwindcss",      // TailwindCSS support (commonly used with Vite)
+        "csstools.postcss",               // PostCSS support (used by Vite)
+        "ZixuanChen.vitest-explorer"      // Vitest support (Vite's testing framework)
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true
+      }
+    }
+  },
+  "forwardPorts": [5173, 4173],  // Vite uses port 5173 for dev and 4173 for preview
+  "remoteUser": "node"
+}
