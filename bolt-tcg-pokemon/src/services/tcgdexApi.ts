@@ -15,8 +15,8 @@ export interface TcgdexCard {
   // Champs additionnels qui peuvent être présents dans la réponse détaillée
   category?: string;
   illustrator?: string;
-  hp?: number;
-  types?: string[];
+  hp: number; // Changer en number au lieu de string optionnel
+  types: string[]; // S'assurer que types est toujours un tableau
   evolveFrom?: string;
   stage?: string;
   attacks?: any[];
@@ -73,7 +73,10 @@ export const tcgdexApi = {
         return {
           ...card,
           // L'URL de l'image: /en/cards/[id]
-          image: buildAssetUrl(card.image)
+          image: buildAssetUrl(card.image),
+          // Convertir explicitement les valeurs
+          hp: parseInt(card.hp?.toString() || '0', 10),
+          types: card.types || [] // S'assurer que types est toujours un tableau
         };
       });
       
@@ -84,7 +87,7 @@ export const tcgdexApi = {
     }
   },
 
-  async getCardById(id: string): Promise<any> {
+  async getCardById(id: string): Promise<TcgdexCard> {
     try {
       const response = await apiClient.get(`/en/cards/${id}`);
       const card = response.data;
@@ -93,10 +96,9 @@ export const tcgdexApi = {
       return {
         ...card,
         image: buildAssetUrl(card.image),
-        textures: {
-          small: buildAssetUrl(card.image),
-          large: buildAssetUrl(card.image),
-        }
+        // Convertir explicitement les valeurs
+        hp: parseInt(card.hp?.toString() || '0', 10),
+        types: card.types || [] // S'assurer que types est toujours un tableau
       };
     } catch (error) {
       console.error(`Error fetching card with id ${id}:`, error);
