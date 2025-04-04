@@ -109,14 +109,16 @@ export function Battle() {
   const handleBattleComplete = () => {
     if (!battleResult) return;
     
-    // Mettre à jour le score
-    const winner = battleResult.winner.id === players.player1.selectedCard?.id ? 'player1' : 'player2';
-    setPlayers(prev => ({
-      ...prev,
-      [winner]: { ...prev[winner], score: prev[winner].score + 1 }
-    }));
+    if (!battleResult.isDraw) {
+      // Mettre à jour le score uniquement si ce n'est pas une égalité
+      const winner = battleResult.winner?.id === players.player1.selectedCard?.id ? 'player1' : 'player2';
+      setPlayers(prev => ({
+        ...prev,
+        [winner]: { ...prev[winner], score: prev[winner].score + 1 }
+      }));
+    }
 
-    // Passer à l'écran de résumé
+    // Passer à l'écran de résumé dans tous les cas
     setPhase('round_summary');
   };
 
@@ -216,18 +218,29 @@ export function Battle() {
           
           <div className="summary-content">
             <div className="battle-outcome">
-              <div className="winner-section">
-                <img 
-                  src={battleResult.winner.image} 
-                  alt={battleResult.winner.name} 
-                  className="winner-card" 
-                />
-                <div className="winner-details">
-                  <h3>{battleResult.winner.name} remporte la manche!</h3>
+              {battleResult.isDraw ? (
+                <div className="draw-section">
+                  <h3>Match Nul!</h3>
                   <p>{battleResult.description}</p>
+                  <div className="cards-comparison">
+                    <img src={players.player1.selectedCard?.image} alt="Joueur 1" className="draw-card" />
+                    <span className="vs-text">VS</span>
+                    <img src={players.player2.selectedCard?.image} alt="Joueur 2" className="draw-card" />
+                  </div>
                 </div>
-              </div>
-
+              ) : (
+                <div className="winner-section">
+                  <img 
+                    src={battleResult.winner?.image} 
+                    alt={battleResult.winner?.name} 
+                    className="winner-card" 
+                  />
+                  <div className="winner-details">
+                    <h3>{battleResult.winner?.name} remporte la manche!</h3>
+                    <p>{battleResult.description}</p>
+                  </div>
+                </div>
+              )}
               <div className="current-score">
                 <h4>Score actuel</h4>
                 <div className="score-display large">

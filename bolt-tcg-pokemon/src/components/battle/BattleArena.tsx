@@ -45,7 +45,13 @@ const BattleArena: React.FC<BattleArenaProps> = ({
       <div className="versus-text">VS</div>
       
       <div className="battle-scene">
-        <div className={`battle-card player1 ${phase} ${battleResult.winner.id === player1Card.id ? 'winner' : 'loser'}`}>
+        <div className={`battle-card player1 ${phase} ${
+          battleResult.isDraw 
+            ? 'draw'
+            : battleResult.winner?.id === player1Card.id 
+              ? 'winner' 
+              : 'loser'
+        }`}>
           <img src={player1Card.image} alt={player1Card.name} />
           <div className="card-stats">
             <div className="card-name">{player1Card.name}</div>
@@ -57,13 +63,19 @@ const BattleArena: React.FC<BattleArenaProps> = ({
         {phase === 'battle' && (
           <div className="battle-effects">
             <div className="clash-effect">⚡</div>
-            {battleResult.reason === 'type' && (
+            {battleResult.reason === 'type' && !battleResult.isDraw && (
               <div className="type-effect">Super Efficace!</div>
             )}
           </div>
         )}
 
-        <div className={`battle-card player2 ${phase} ${battleResult.winner.id === player2Card.id ? 'winner' : 'loser'}`}>
+        <div className={`battle-card player2 ${phase} ${
+          battleResult.isDraw 
+            ? 'draw'
+            : battleResult.winner?.id === player2Card.id 
+              ? 'winner' 
+              : 'loser'
+        }`}>
           <img src={player2Card.image} alt={player2Card.name} />
           <div className="card-stats">
             <div className="card-name">{player2Card.name}</div>
@@ -75,7 +87,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({
 
       {phase === 'result' && (
         <div className="battle-result">
-          <div className={`result-message ${battleResult.reason}`}>
+          <div className={`result-message ${battleResult.reason} ${battleResult.isDraw ? 'draw' : ''}`}>
             {battleResult.description}
           </div>
         </div>

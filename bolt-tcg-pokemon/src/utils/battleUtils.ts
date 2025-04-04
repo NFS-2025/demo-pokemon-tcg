@@ -53,10 +53,11 @@ const TYPE_MATCHUPS: Record<string, { strengths: string[], weaknesses: string[] 
 };
 
 export interface BattleResult {
-  winner: TcgdexCard;
-  loser: TcgdexCard;
-  reason: 'type' | 'hp' | 'default';
+  winner: TcgdexCard | null; // Peut être null en cas d'égalité
+  loser: TcgdexCard | null;  // Peut être null en cas d'égalité
+  reason: 'type' | 'hp' | 'draw';  // Ajout de 'draw' pour les égalités
   description: string;
+  isDraw: boolean;  // Nouveau champ pour identifier facilement une égalité
 }
 
 export const determineBattleWinner = (card1: TcgdexCard, card2: TcgdexCard): BattleResult => {
@@ -90,7 +91,8 @@ export const determineBattleWinner = (card1: TcgdexCard, card2: TcgdexCard): Bat
         winner: card1,
         loser: card2,
         reason: 'type',
-        description: `${card2.name} est faible contre le type ${type1}!`
+        description: `${card2.name} est faible contre le type ${type1}!`,
+        isDraw: false
       };
     }
 
@@ -101,7 +103,8 @@ export const determineBattleWinner = (card1: TcgdexCard, card2: TcgdexCard): Bat
         winner: card2,
         loser: card1,
         reason: 'type',
-        description: `${card1.name} est faible contre le type ${type2}!`
+        description: `${card1.name} est faible contre le type ${type2}!`,
+        isDraw: false
       };
     }
 
@@ -114,7 +117,8 @@ export const determineBattleWinner = (card1: TcgdexCard, card2: TcgdexCard): Bat
         winner: card2,
         loser: card1,
         reason: 'type',
-        description: `${card2.name} résiste aux attaques de type ${type1}!`
+        description: `${card2.name} résiste aux attaques de type ${type1}!`,
+        isDraw: false
       };
     }
 
@@ -123,7 +127,8 @@ export const determineBattleWinner = (card1: TcgdexCard, card2: TcgdexCard): Bat
         winner: card1,
         loser: card2,
         reason: 'type',
-        description: `${card1.name} résiste aux attaques de type ${type2}!`
+        description: `${card1.name} résiste aux attaques de type ${type2}!`,
+        isDraw: false
       };
     }
   }
@@ -139,15 +144,17 @@ export const determineBattleWinner = (card1: TcgdexCard, card2: TcgdexCard): Bat
       winner,
       loser,
       reason: 'hp',
-      description: `${winner.name} gagne avec ${winner.hp} HP contre ${loser.hp} HP!`
+      description: `${winner.name} gagne avec ${winner.hp} HP contre ${loser.hp} HP!`,
+      isDraw: false
     };
   }
 
   // En cas d'égalité totale
   return {
-    winner: card1,
-    loser: card2,
-    reason: 'default',
-    description: 'Égalité - Premier joueur gagnant'
+    winner: null,
+    loser: null,
+    reason: 'draw',
+    description: 'Match nul ! Aucun point attribué.',
+    isDraw: true
   };
 };
