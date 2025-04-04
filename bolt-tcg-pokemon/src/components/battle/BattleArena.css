@@ -114,8 +114,12 @@
 .result-message.hp { color: #27ae60; }
 .result-message.default { color: #3498db; }
 .result-message.draw {
-  background: linear-gradient(135deg, #6c757d, #495057);
-  color: white;
+  background: rgba(255, 255, 255, 0.95);
+  color: #000;
+  font-weight: bold;
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  animation: drawGlow 2s ease-in-out infinite;
 }
 
 /* New styles for draw section */
@@ -210,5 +214,16 @@
   50% {
     transform: scale(1.02);
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.7);
+  }
+}
+
+@keyframes drawGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+    transform: scale(1.02);
   }
 }
