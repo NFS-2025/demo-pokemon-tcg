@@ -14,3 +14,7 @@
 
 - React.js : `npm create vite@latest <nom-app> -- --template react`
 - React.ts : `npm create vite@latest <nom-app> -- --template react-ts`
+
+### Remarques
+
+- Si l'IDE affiche des erreurs par rapport à react/jsx-runtime lorsqu'on ouvre un fichier tsx, penser à bien faire "npm install" pour que les node modules du nouveau projet s'installe
