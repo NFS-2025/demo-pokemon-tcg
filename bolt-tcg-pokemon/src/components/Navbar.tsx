@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Car as Cards, Swords, User as UserIcon, LogOut } from 'lucide-react';
+import { BookOpenText as Cards, Swords, User as UserIcon, LogOut } from 'lucide-react';
 
 export function Navbar() {
   const { user, logout } = useAuth();

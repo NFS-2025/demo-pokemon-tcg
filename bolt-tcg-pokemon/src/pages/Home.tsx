@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Car as Cards, Swords, User } from 'lucide-react';
+import { BookOpenText as Cards, Swords, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export function Home() {
