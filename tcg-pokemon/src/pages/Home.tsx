@@ -6,31 +6,6 @@ import { useAuth } from '../context/AuthContext';
 export function Home() {
   const { user } = useAuth();
 
-  const pingServer = async () => {
-    try {
-      const result = await fetch('https://localhost:7254/WeatherForecast', {
-      method: 'GET',
-      headers: {
-        'X-API-Key': `NFM-2025-react-api-key`
-      }
-      })
-      if (result.ok) {
-        const data = await result.json();
-        console.log('Server response:', data);
-      } else {
-        console.error('Error pinging server:', result.statusText);
-      } 
-    }
-    catch (error) {
-      console.error('Error pinging server:', error);
-    }
-  }
-
-  useEffect(() => {
-    pingServer()
-  }
-  , []);
-
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-7xl mx-auto py-12 px-4">

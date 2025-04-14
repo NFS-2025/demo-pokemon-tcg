@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import toast from "react-hot-toast";
 
 export function Login() {
   const [username, setUsername] = useState('');
@@ -10,10 +11,38 @@ export function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim()) {
-      login(username);
-      navigate('/');
+      auth(username.trim());
     }
   };
+  
+  
+    const auth = async (email: string) => {
+      try {
+        const result = await fetch(`https://localhost:7254/api/Inscription/check-email?email=${email}`, {
+        method: 'GET',
+        headers: {
+          'X-API-Key': `NFM-2025-react-api-key`
+        }
+        })
+        if (result.ok) {
+          const data = await result.json();
+          console.log('Server response:', data);
+          if (data.isRegistered) {
+            login(username);
+            navigate('/');
+            toast.success('Connection réussie !');
+          }
+          else {
+            toast.error('Email not found. Please register first.');
+          } 
+        } else {
+          console.error('Error logging in :', result.statusText);
+        } 
+      }
+      catch (error) {
+        console.error('Error logging in :', error);
+      }
+    }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
