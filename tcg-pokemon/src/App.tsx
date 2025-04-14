@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Login } from './pages/Login';
+import { Register } from './pages/Register';
 import { Home } from './pages/Home';
 import { Collection } from './pages/Collection';
 import { DeckProvider } from "./context/DeckContext";
@@ -25,6 +26,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/inscription" element={<Register />} />
             <Route
               path="/"
               element={
