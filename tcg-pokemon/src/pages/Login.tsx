@@ -18,7 +18,7 @@ export function Login() {
   
     const auth = async (email: string) => {
       try {
-        const result = await fetch(`https://localhost:7254/api/Inscription/check-email?email=${email}`, {
+        const result = await fetch(`${import.meta.env.VITE_AUTH_API_URL}/Inscription/check-email?email=${email}`, {
         method: 'GET',
         headers: {
           'X-API-Key': `NFM-2025-react-api-key`
