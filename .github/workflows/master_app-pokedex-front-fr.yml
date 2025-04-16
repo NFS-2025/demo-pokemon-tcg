@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: '22.x'
 
+      - name: Access src directory
+        run: cd tcg-pokemon
+
       - name: npm install, build, and test
         run: |
           npm install
